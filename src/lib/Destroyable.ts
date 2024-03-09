@@ -1,12 +1,7 @@
+import { IDestroyable } from '../types';
 import { Component } from './Component';
 import { Initializeble } from './Initializeble';
 
-/**
- * Interface for objects that can be destroyed.
- */
-export interface IDestroyable {
-  destroy: () => void;
-}
 
 /**
  * Abstract class for objects that can be destroyed, extending from `Initializeble`.

@@ -1,16 +1,13 @@
 {
   "name": "sqli.js",
   "author": "Anas Jaidi",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "I don't have a description",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist/"
-  ],
+  "main": "./src/index.ts",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "prepublishOnly": "tsc && rollup -c"
   },
   "license": "ISC",
   "devDependencies": {

@@ -1,4 +1,3 @@
-import { __init } from '..';
 import { IProps } from '../types';
 import { CustomElement } from './CustomElement';
 import { Statble } from './Statble';
@@ -11,7 +10,7 @@ interface IComponent {
   _render: (props?: IProps) => any;
 }
 
-type ComponentsTreeSegamnt = Component | CustomElement<HTMLElement> ;
+type ComponentsTreeSegamnt = Component | CustomElement<HTMLElement>;
 
 interface IComponentsTree {
   parent: ComponentsTreeSegamnt;
@@ -22,8 +21,9 @@ interface IComponentsTree {
  * Abstract class for components, extending from `Statble`.
  */
 export abstract class Component extends Statble implements IComponent {
-  protected _element: HTMLElement;
+  // protected _element: HTMLElement;
   protected __position: number = 0;
+  private __parent__: HTMLElement;
 
   get position() {
     return this.__position;
@@ -56,36 +56,17 @@ export abstract class Component extends Statble implements IComponent {
       }
     } else if (element instanceof Component) {
       this.__toDestroy.push(element);
-      element.render({ parent });
+      element.__parent__ = parent;
+      element.init().render();
     } else if (element instanceof CustomElement) {
       parent.appendChildAtNth(element.render(), element.position);
     }
-    // if (element instanceof HTMLElement) {
-    //   if (element instanceof Component) {
-    //     this.__toDestroy.push(element);
-    //     element.render({ parent });
-    //   } else {
-    //     parent.appendChild(element);
-    //   }
-    // } else if (element['parent']) {
-    //   if (!('childs' in element) || !Array.isArray(element['childs'])) {
-    //     throw new Error('Parsing Error');
-    //   }
-    //   if (element.parent instanceof Component) {
-    //     this.__toDestroy.push(element);
-    //     element.render({ parent });
-    //   }
-    //   this.treefiy(element.childs, element.parent);
-    // } else if (Array.isArray(element)) {
-    //   element.forEach((d) => {
-    //     if (d instanceof Component) {
-    //       this.__toDestroy.push(d);
-    //       d.render({ parent });
-    //     } else {
-    //       parent.appendChild(d);
-    //     }
-    //   });
-    // }
+  }
+
+  constructor(props?: IProps) {
+    console.log('okkok', props);
+    super();
+    this.render = this.render.bind(this, props);
   }
 
   /**
@@ -94,16 +75,18 @@ export abstract class Component extends Statble implements IComponent {
   render(props?: IProps) {
     this.render = this.render.bind(this, props);
     this.onRender();
-    const tree: IComponentsTree  = this._render(props) as any;
-    console.log(props)
+    const tree: IComponentsTree = this._render(props) as any;
+    'init' in tree.parent && tree.parent.init();
 
-    this._element = tree.parent.render();
+    this._element =
+      (tree.parent.render && tree.parent.render()) ||
+      (tree.parent as any as HTMLElement);
 
     tree.childs && tree.childs.length
       ? this.treefiy(tree.childs, this._element)
       : null;
 
-    (props?.parent as HTMLElement)?.appendChildAtNth(
+    ((props?.parent as HTMLElement) || this.__parent__)?.appendChildAtNth(
       this._element,
       this.position
     );

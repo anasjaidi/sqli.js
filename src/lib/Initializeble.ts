@@ -32,8 +32,10 @@ export interface IInitializeble {
      * @returns The initialized object.
      */
     init(conf?: any) {
+      console.log("init")
       this.init = this.init.bind(this, conf)
       this._init();
+      console.log(this)
       return this;
     }
   

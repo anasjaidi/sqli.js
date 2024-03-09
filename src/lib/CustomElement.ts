@@ -1,16 +1,5 @@
-export interface ElementConfig {
-  innerText?: string;
-  attributes?: {
-    [k in string]: string;
-  };
-  events?: {
-    [K in keyof HTMLElementEventMap]?: EventListener;
-  };
-  styles?: Partial<CSSStyleDeclaration>;
-  options?: {
-    render: boolean;
-  };
-}
+import { ElementConfig } from "../types";
+
 
 /**
  * Represents a custom element wrapper that provides utility methods for managing an HTMLElement.
