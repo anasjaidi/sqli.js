@@ -1,4 +1,5 @@
 import { IStore, State } from "../types/store";
+import { Component } from "./Component";
 import { LocalStorageHandler } from "./webApiStorage";
 
 
@@ -47,10 +48,10 @@ class Store extends LocalStorageHandler implements IStore {
   unsubscribe(ctx: any, identifiers: string[]) {
     identifiers.forEach((identifier) => {
       this._state[identifier]
-        ? (this._state[identifier].subscribes = this._state[
-            identifier
-          ].subscribes.filter((s) => s.ctx !== ctx))
-        : {};
+      ? (this._state[identifier].subscribes = this._state[
+        identifier
+      ].subscribes.filter((s) => s.ctx !== ctx))
+      : {};
     });
   }
 
@@ -63,9 +64,16 @@ class Store extends LocalStorageHandler implements IStore {
     typeof cb == 'function'
       ? cb(identifier, this._state)
       : (this._state[identifier] = { ...this._state[identifier], state: cb });
-    this._state[identifier].subscribes.forEach((s) => {
+    this._state[identifier].subscribes.reverse().forEach((s) => {
+      if (this._state[identifier].subscribes.find((s__) => {
+        return "hasChild" in s__.ctx && s__.ctx.hasChild(s.ctx)
+      })) {
+
+        return ;
+      }
+      
       s.ctx['destroy']();
-      s.ctx['render']();
+      s.ctx['_init']()['_render']();
     });
   }
 

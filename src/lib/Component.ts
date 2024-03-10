@@ -6,8 +6,8 @@ import { Statble } from './Statble';
  * Interface for components with render functions.
  */
 interface IComponent {
-  render: (props?: IProps) => void;
-  _render: (props?: IProps) => any;
+  render: (props?: IProps) => any;
+  _render: (props?: IProps) => HTMLElement;
 }
 
 type ComponentsTreeSegamnt = Component | CustomElement<HTMLElement>;
@@ -36,7 +36,7 @@ export abstract class Component extends Statble implements IComponent {
   /**
    * Abstract method to be implemented by child classes.
    */
-  abstract _render(props?: IProps): any;
+  abstract render(props?: IProps): any;
 
   /**
    * Recursively appends child elements to the parent element.
@@ -57,29 +57,28 @@ export abstract class Component extends Statble implements IComponent {
     } else if (element instanceof Component) {
       this.__toDestroy.push(element);
       element.__parent__ = parent;
-      element.init().render();
+      element._init()._render();
     } else if (element instanceof CustomElement) {
-      parent.appendChildAtNth(element.render(), element.position);
+      this.__toDestroy.push(element);
+      parent.appendChildAtNth(element._render(), element.position);
     }
   }
 
   constructor(props?: IProps) {
-    console.log('okkok', props);
     super();
-    this.render = this.render.bind(this, props);
+    this._render = this._render.bind(this, props);
   }
 
   /**
    * Renders the component.
    */
-  render(props?: IProps) {
-    this.render = this.render.bind(this, props);
-    this.onRender();
-    const tree: IComponentsTree = this._render(props) as any;
-    'init' in tree.parent && tree.parent.init();
+  _render(props?: IProps) {
+    this._render = this._render.bind(this, props);
+    const tree: IComponentsTree = this.render(props) as any;
+    '_init' in tree.parent && tree.parent._init();
 
     this._element =
-      (tree.parent.render && tree.parent.render()) ||
+      (tree.parent._render && tree.parent._render()) ||
       (tree.parent as any as HTMLElement);
 
     tree.childs && tree.childs.length
@@ -91,7 +90,10 @@ export abstract class Component extends Statble implements IComponent {
       this.position
     );
 
-    this.onRenderd();
     return this._element;
+  }
+
+  hasChild(ctx: Component): boolean {
+    return this.__toDestroy.includes(ctx)
   }
 }

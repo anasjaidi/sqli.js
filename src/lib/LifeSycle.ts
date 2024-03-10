@@ -1,52 +1,45 @@
-import { Destroyable } from "./Destroyable";
+import { Component } from './Component';
+import { CustomElement } from './CustomElement';
 
-/**
- * Interface for objects with lifecycle methods.
- */
 export interface ILifeSycle {
-    /**
-     * Method called when the object is about to be destroyed.
-     */
-    onDestroy: () => void;
-  
-    /**
-     * Method called after the object has been destroyed.
-     */
-    onDestroyed: () => void;
-  
-    /**
-     * Method called when the object is about to be rendered.
-     */
-    onRender: () => void;
-  
-    /**
-     * Method called after the object has been rendered.
-     */
-    onRenderd: () => void;
+  init: (conf?: any) => undefined | (() => void);
+
+  _init: (conf?: any) => typeof this;
+
+  destroy: () => void;
+}
+
+export abstract class LifeSycle implements ILifeSycle {
+  protected ___destroy__cb_1: () => void;
+
+  protected __toDestroy: (Component | CustomElement<HTMLElement>)[] = [];
+  protected _element: HTMLElement;
+
+  abstract render(props?: any): undefined | (() => void);
+
+  _init(conf?: any) {
+    this._init = this._init.bind(this, conf);
+    this.___destroy__cb_1 = this.init();
+    return this;
   }
-  
-  /**
-   * Abstract class for objects with lifecycle methods, extending `Destroyable`.
-   */
-  export abstract class LifeSycle extends Destroyable {
-    /**
-     * Empty method called when the object is about to be destroyed.
-     */
-    onDestroy() {}
-  
-    /**
-     * Empty method called after the object has been destroyed.
-     */
-    onDestroyed() {}
-  
-    /**
-     * Empty method called when the object is about to be rendered.
-     */
-    onRender() {}
-  
-    /**
-     * Empty method called after the object has been rendered.
-     */
-    onRenderd() {}
+
+  abstract init(conf?: any): undefined | (() => void);
+
+  destroy(): void {
+    'onDestroy' in this &&
+      typeof this.onDestroy === 'function' &&
+      this.onDestroy();
+
+    this.__toDestroy.reverse().forEach((d) => d.destroy());
+
+    this.___destroy__cb_1 && this.___destroy__cb_1();
+
+    this._element.remove();
+
+    this.__toDestroy = [];
+
+    'onDestroyed' in this &&
+      typeof this.onDestroyed === 'function' &&
+      this.onDestroyed();
   }
-  
+}

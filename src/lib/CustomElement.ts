@@ -160,7 +160,7 @@ export class CustomElement<T extends HTMLElement> {
    * Renders the wrapped HTMLElement.
    * @returns The wrapped HTMLElement.
    */
-  render() {
+  _render() {
     return this._component;
   }
 

@@ -80,7 +80,7 @@ export interface ICustomHtmlElement {
    * Renders the component.
    * @returns The rendered component.
    */
-  render(): HTMLElement;
+  _render(): HTMLElement;
 
   /**
    * Destroys the component, removing event listeners and the component itself from the DOM.
@@ -107,5 +107,5 @@ export interface ElementConfig {
  * Interface for objects that can be destroyed.
  */
 export interface IDestroyable {
-  destroy: () => void;
+
 }

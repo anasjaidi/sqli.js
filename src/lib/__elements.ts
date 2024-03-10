@@ -25,7 +25,7 @@ export class Fragment {
     this._f = document.createDocumentFragment();
   }
 
-  render() {
+  _render() {
     return this._f;
   }
 

@@ -10,9 +10,7 @@ import {
   Label,
 } from './__elements';
 import { Component } from './Component';
-import { CustomElement } from './CustomElement';
-import { Destroyable } from './Destroyable';
-import {  Initializeble } from './Initializeble';
+import { CustomElement } from './CustomElement';;
 import {  LifeSycle } from './LifeSycle';
 import { Statble } from './Statble';
 import { store } from './store';
@@ -29,8 +27,6 @@ export {
   Label,
   Component,
   CustomElement,
-  Destroyable,
-  Initializeble,
   LifeSycle,
   LocalStorageHandler,
   Statble,
