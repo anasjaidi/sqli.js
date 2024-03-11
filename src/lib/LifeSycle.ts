@@ -9,8 +9,17 @@ export interface ILifeSycle {
   destroy: () => void;
 }
 
+interface DestroyTask<T extends 'unsbscribe'> {
+  __identifier: T;
+  payload: T extends 'unsbscribe' ? {
+    __state__identifier: string;
+  } : {};
+}
+
 export abstract class LifeSycle implements ILifeSycle {
   protected ___destroy__cb_1: () => void;
+
+  protected __destroyement__tasks_: DestroyTask<'unsbscribe'>[] = [];
 
   protected __toDestroy: (Component | CustomElement<HTMLElement>)[] = [];
   protected _element: HTMLElement;
@@ -26,9 +35,8 @@ export abstract class LifeSycle implements ILifeSycle {
   abstract init(conf?: any): undefined | (() => void);
 
   destroy(): void {
-    'onDestroy' in this &&
-      typeof this.onDestroy === 'function' &&
-      this.onDestroy();
+
+    (this as any).__to__global_detach.forEach(id => (this as any).stateSubscribe(id))
 
     this.__toDestroy.reverse().forEach((d) => d.destroy());
 
@@ -37,9 +45,5 @@ export abstract class LifeSycle implements ILifeSycle {
     this._element.remove();
 
     this.__toDestroy = [];
-
-    'onDestroyed' in this &&
-      typeof this.onDestroyed === 'function' &&
-      this.onDestroyed();
   }
 }

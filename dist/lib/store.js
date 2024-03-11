@@ -53,11 +53,11 @@ class Store extends webApiStorage_1.LocalStorageHandler {
      */
     dispatch(identifier, cb) {
         typeof cb == 'function'
-            ? cb(identifier, this._state)
-            : (this._state[identifier] = { ...this._state[identifier], state: cb });
+            ? (this._state[identifier].state = cb(identifier, this._state[identifier].state))
+            : (this._state[identifier].state = cb);
         this._state[identifier].subscribes.reverse().forEach((s) => {
             if (this._state[identifier].subscribes.find((s__) => {
-                return "hasChild" in s__.ctx && s__.ctx.hasChild(s.ctx);
+                return 'hasChild' in s__.ctx && s__.ctx.hasChild(s.ctx);
             })) {
                 return;
             }
@@ -72,11 +72,16 @@ class Store extends webApiStorage_1.LocalStorageHandler {
      * @param state The new state value.
      * @returns The updated state object.
      */
-    setState(ctx, identifier, state) {
+    setState(ctx, identifier, state, conf) {
+        if (this._state[identifier]) {
+            this.subscribe(ctx, [identifier]);
+            return;
+        }
         this._state[identifier] = {
             identifier,
             state,
             subscribes: [{ ctx }],
+            conf,
         };
         return this._state[identifier];
     }

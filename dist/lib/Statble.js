@@ -8,6 +8,7 @@ const store_1 = require("./store");
  */
 class Statble extends LifeSycle_1.LifeSycle {
     _state = {};
+    __to__global_detach = [];
     /**
      * Dispatches a state change for a given identifier.
      * @param identifier The identifier for the state.
@@ -38,6 +39,9 @@ class Statble extends LifeSycle_1.LifeSycle {
      */
     stateSubscribe(identifiers) {
         const states = store_1.store.subscribe.bind(store_1.store, this)(Array.isArray(identifiers) ? identifiers : [identifiers]);
+        Array.isArray(identifiers)
+            ? this.__to__global_detach.push(...identifiers)
+            : this.__to__global_detach.push(identifiers);
         return states.length === 1 ? states[0] : states;
     }
     /**
@@ -46,6 +50,7 @@ class Statble extends LifeSycle_1.LifeSycle {
      * @param data The data to set for the state.
      */
     setState(identifier, data) {
+        this.__to__global_detach.push(identifier);
         if (identifier in this._state)
             return;
         this._state[`_${identifier}`] = data;

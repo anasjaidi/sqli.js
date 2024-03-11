@@ -1,5 +1,5 @@
-import { IStore } from "../types/store";
-import { LocalStorageHandler } from "./webApiStorage";
+import { IStore, StoreSubscribeConfig } from '../types/store';
+import { LocalStorageHandler } from './webApiStorage';
 declare class Store extends LocalStorageHandler implements IStore {
     private _state;
     private static instance;
@@ -31,10 +31,11 @@ declare class Store extends LocalStorageHandler implements IStore {
      * @param state The new state value.
      * @returns The updated state object.
      */
-    setState<T>(ctx: any, identifier: string, state: T): {
+    setState<T>(ctx: any, identifier: string, state: T, conf?: StoreSubscribeConfig): {
         state: any;
         subscribes: import("../types/store").Subscription[];
         identifier: string;
+        conf: StoreSubscribeConfig;
     };
 }
 export declare const store: Store;

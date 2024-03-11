@@ -1,3 +1,6 @@
+export interface StoreSubscribeConfig {
+    persist?: boolean;
+}
 /**
  * Represents a store that manages application state.
  */
@@ -8,7 +11,7 @@ export interface IStore {
      * @param identifiers An array of identifier strings to subscribe to.
      * @returns An array of state values corresponding to the subscribed identifiers.
      */
-    subscribe(ctx: any, identifiers: string[]): any[];
+    subscribe(ctx: any, identifiers: string[], conf?: StoreSubscribeConfig): any[];
     /**
      * Unsubscribes a context from state changes for specified identifiers.
      * @param ctx The context to unsubscribe.
@@ -42,6 +45,7 @@ export interface State {
         state: any;
         subscribes: Subscription[];
         identifier: string;
+        conf: StoreSubscribeConfig;
     };
 }
 /**

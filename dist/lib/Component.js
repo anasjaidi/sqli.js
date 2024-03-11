@@ -19,17 +19,28 @@ class Component extends Statble_1.Statble {
     /**
      * Recursively appends child elements to the parent element.
      */
-    treefiy(element, parent) {
+    treefiy(element, parent, index = -1) {
         if (Array.isArray(element)) {
             element.forEach((el, idx) => {
-                el.position = idx;
-                this.treefiy(el, parent);
+                if ("parent" in el && "childs" in el) {
+                    if (!Array.isArray(el['childs'])) {
+                        throw new Error();
+                    }
+                    this.treefiy(el, parent, idx);
+                }
+                else {
+                    el.position = idx;
+                    this.treefiy(el, parent);
+                }
             });
         }
         else if ('parent' in element && 'childs' in element) {
             if (!Array.isArray(element['childs'])) {
                 throw new Error();
             }
+            const el = element.parent._render();
+            this.treefiy(element.childs, el);
+            parent.appendChildAtNth(el, index > -1 ? index : 0);
         }
         else if (element instanceof Component) {
             this.__toDestroy.push(element);

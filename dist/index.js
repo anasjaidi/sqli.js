@@ -15,14 +15,4 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("./lib/__html");
-HTMLElement.prototype.appendChildAtNth = function (element, idx) {
-    if (!idx)
-        idx = 0;
-    if (idx >= this.children.length) {
-        this.appendChild(element);
-    }
-    else {
-        this.insertBefore(element, this.children[idx]);
-    }
-};
 __exportStar(require("./lib"), exports);

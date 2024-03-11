@@ -33,6 +33,7 @@ export interface IStatble {
  */
 export declare abstract class Statble extends LifeSycle implements IStatble {
     protected _state: any;
+    protected __to__global_detach: string[];
     abstract _render(props?: IProps): HTMLElement;
     /**
      * Dispatches a state change for a given identifier.

@@ -39,8 +39,9 @@ export interface IStatble {
  */
 export abstract class Statble extends LifeSycle implements IStatble {
   protected _state: any = {};
+  protected __to__global_detach: string[] = [];
 
-  abstract _render(props?: IProps): HTMLElement ;
+  abstract _render(props?: IProps): HTMLElement;
 
   /**
    * Dispatches a state change for a given identifier.
@@ -78,6 +79,9 @@ export abstract class Statble extends LifeSycle implements IStatble {
       store,
       this
     )(Array.isArray(identifiers) ? identifiers : [identifiers]);
+    Array.isArray(identifiers)
+      ? this.__to__global_detach.push(...identifiers)
+      : this.__to__global_detach.push(identifiers);
     return states.length === 1 ? states[0] : states;
   }
 
@@ -87,6 +91,7 @@ export abstract class Statble extends LifeSycle implements IStatble {
    * @param data The data to set for the state.
    */
   setState(identifier: string, data: any) {
+    this.__to__global_detach.push(identifier)
     if (identifier in this._state) return;
     this._state[`_${identifier}`] = data;
     Object.defineProperty(this._state, `${identifier}`, {

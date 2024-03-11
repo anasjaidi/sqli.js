@@ -1,14 +1,12 @@
-import { IStore, State } from "../types/store";
-import { Component } from "./Component";
-import { LocalStorageHandler } from "./webApiStorage";
-
+import { IStore, State, StoreSubscribeConfig } from '../types/store';
+import { LocalStorageHandler } from './webApiStorage';
 
 class Store extends LocalStorageHandler implements IStore {
   private _state: State;
   private static instance: Store;
 
   constructor() {
-    super()
+    super();
     this._state = {};
   }
 
@@ -48,10 +46,10 @@ class Store extends LocalStorageHandler implements IStore {
   unsubscribe(ctx: any, identifiers: string[]) {
     identifiers.forEach((identifier) => {
       this._state[identifier]
-      ? (this._state[identifier].subscribes = this._state[
-        identifier
-      ].subscribes.filter((s) => s.ctx !== ctx))
-      : {};
+        ? (this._state[identifier].subscribes = this._state[
+            identifier
+          ].subscribes.filter((s) => s.ctx !== ctx))
+        : {};
     });
   }
 
@@ -62,16 +60,20 @@ class Store extends LocalStorageHandler implements IStore {
    */
   dispatch(identifier: string, cb: any) {
     typeof cb == 'function'
-      ? cb(identifier, this._state)
-      : (this._state[identifier] = { ...this._state[identifier], state: cb });
-    this._state[identifier].subscribes.reverse().forEach((s) => {
-      if (this._state[identifier].subscribes.find((s__) => {
-        return "hasChild" in s__.ctx && s__.ctx.hasChild(s.ctx)
-      })) {
+      ? (this._state[identifier].state = cb(
+          identifier,
+          this._state[identifier].state
+        ))
+      : (this._state[identifier].state = cb);
 
-        return ;
+    this._state[identifier].subscribes.reverse().forEach((s) => {
+      if (
+        this._state[identifier].subscribes.find((s__) => {
+          return 'hasChild' in s__.ctx && s__.ctx.hasChild(s.ctx);
+        })
+      ) {
+        return;
       }
-      
       s.ctx['destroy']();
       s.ctx['_init']()['_render']();
     });
@@ -84,11 +86,21 @@ class Store extends LocalStorageHandler implements IStore {
    * @param state The new state value.
    * @returns The updated state object.
    */
-  setState<T>(ctx: any, identifier: string, state: T) {
+  setState<T>(
+    ctx: any,
+    identifier: string,
+    state: T,
+    conf?: StoreSubscribeConfig
+  ) {
+    if (this._state[identifier]) {
+      this.subscribe(ctx, [identifier]);
+      return;
+    }
     this._state[identifier] = {
       identifier,
       state,
       subscribes: [{ ctx }],
+      conf,
     };
     return this._state[identifier];
   }
